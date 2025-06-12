@@ -2,6 +2,7 @@ import requests
 import flet as ft
 from flet import AppBar,Text, View
 from flet.core import page
+from flet.core.alignment import center
 from flet.core.colors import Colors
 from flet.core.elevated_button import ElevatedButton
 from sqlalchemy import select
@@ -12,7 +13,7 @@ from flet.core.types import FontWeight, MainAxisAlignment, CrossAxisAlignment
 from models import *
 
 def main(page: ft.Page):
-    page.title = "Apliactivo mecânica"
+    page.title = "Aplicativo mecânica"
     page.theme_mode = ft.ThemeMode.DARK
     page.window.width = 375
     page.window.height = 667
@@ -294,7 +295,7 @@ def main(page: ft.Page):
                         ft.Image(src='logo.png'),
                     ),
 
-                    ElevatedButton(text="Entrar",color='#f1ecd1',bgcolor="#673c22", on_click=lambda _: page.go("/pagina_locomocao")),
+                    ElevatedButton(text="ENTRAR",color='#f1ecd1',bgcolor="#673c22", on_click=lambda _: page.go("/pagina_locomocao")),
                 ],
                 bgcolor='#f1ecd1',
                 vertical_alignment=MainAxisAlignment.CENTER,
@@ -308,19 +309,39 @@ def main(page: ft.Page):
                     "/pagina_locomocao",
                     [
                         ft.Container(
-                            ft.Image(src='segunda_ pag.jpg',height=400,width=400),
+                            ft.Image(src='segunda_tela.png',height=400,width=400),
                         ),
 
-                        ElevatedButton(text="Cadastros", color='#f1ecd1', bgcolor="#673c22",on_click=lambda _: page.go("/cadastros")),
-                        ElevatedButton(text="Listas", color='#f1ecd1', bgcolor="#673c22", on_click=lambda _: page.go("/listas")),
+                        ft.ResponsiveRow(
+                            [
+
+                                ft.FilledButton(
+                                    text="Cadastro",
+                                    on_click=lambda _: page.go("/cadastros"),
+                                    color='#f1ecd1',
+                                    bgcolor='#991C22',
+                                    col=6,
+                                ),
+
+                                ft.FilledButton(
+                                    text="Listas",
+                                    on_click=lambda _: page.go("/listas"),
+                                    color='#f1ecd1',
+                                    bgcolor='#673c22',
+                                    col=6,
+                                ),
+
+                            ]
+                        ),
                         ElevatedButton(text="VOLTAR", color='#f1ecd1', bgcolor="#673c22", on_click=lambda _: page.go("/tela")),
 
                     ],
-                    bgcolor='#f1ecd1',
-                    vertical_alignment=MainAxisAlignment.CENTER,
-                    horizontal_alignment=CrossAxisAlignment.CENTER,
+                    bgcolor = '#f1ecd1',
+                    vertical_alignment = MainAxisAlignment.CENTER,
+                    horizontal_alignment = CrossAxisAlignment.CENTER,
                 )
             )
+
 
         if page.route == "/cadastros":
             page.views.append(
@@ -328,13 +349,48 @@ def main(page: ft.Page):
                     "/cadastros",
                     [
                         ft.Container(
-                            ft.Image(src='terceira tela.png', height=400, width=400),
+                            ft.Image(src='terceira_tela_cadastro.png', height=300, width=300),
                         ),
-                        ElevatedButton(text="Cadastrar cliente", color='#f1ecd1', bgcolor="#673c22",on_click=lambda _: page.go("/cadastros")),
-                        ElevatedButton(text="Cadastrar veiculo", color='#f1ecd1', bgcolor="#673c22",on_click=lambda _: page.go("/cadastros")),
-                        ElevatedButton(text="Cadastrar ordem", color='#f1ecd1', bgcolor="#673c22",on_click=lambda _: page.go("/cadastros")),
-                        ElevatedButton(text="VOLTAR", color='#f1ecd1', bgcolor="#673c22",on_click=lambda _: page.go("/pagina_locomocao")),
-                    ],
+
+                        ft.ResponsiveRow(
+                            [
+
+                                ft.FilledButton(
+                                    text="Cadastro cliente",
+                                    on_click=lambda _: page.go("/cadastrar_clientes"),
+                                    color='#f1ecd1',
+                                    bgcolor='#991C22',
+                                    col=6,
+                                ),
+
+                                ft.FilledButton(
+                                    text="Cadastro veículo",
+                                    on_click=lambda _: page.go("/cadastrar_veiculos"),
+                                    color='#f1ecd1',
+                                    bgcolor='#991C22',
+                                    col=6,
+                                ),
+
+                                ft.FilledButton(
+                                    text="Cadastro ordem",
+                                    on_click=lambda _: page.go("/cadastrar_ordens"),
+                                    color='#f1ecd1',
+                                    bgcolor='#991C22',
+                                    col=6,
+
+                                ),
+
+                                ft.FilledButton(
+                                    text="VOLTAR",
+                                    on_click=lambda _: page.go("/pagina_locomoca"),
+                                    color='#f1ecd1',
+                                    bgcolor='#673c22',
+                                    col=6,
+
+                                ),
+                            ]
+                        ),
+                      ],
                     bgcolor='#f1ecd1',
                     vertical_alignment=MainAxisAlignment.CENTER,
                     horizontal_alignment=CrossAxisAlignment.CENTER,
@@ -342,25 +398,106 @@ def main(page: ft.Page):
             )
         page.update()
 
-        if page.route == "/listas":
+        if page.route == "/cadastrar_clientes":
             page.views.append(
                 View(
-                    "/listas",
+                    "/cadastrar_clientes",
                     [
                         ft.Container(
-                            ft.Image(src='terceira tela.png', height=400, width=400),
+                            ft.Image(src='quarta_tela_cadastro.png', height=250, width=250)
                         ),
-                        ElevatedButton(text="Listar cliente", color='#f1ecd1', bgcolor="#673c22",on_click=lambda _: page.go("/listas")),
-                        ElevatedButton(text="Listar veiculo", color='#f1ecd1', bgcolor="#673c22",on_click=lambda _: page.go("/listas")),
-                        ElevatedButton(text="Listar ordem", color='#f1ecd1', bgcolor="#673c22",on_click=lambda _: page.go("/listas")),
-                        ElevatedButton(text="Listar status", color='#f1ecd1', bgcolor="#673c22",on_click=lambda _: page.go("/listas")),
-                        ElevatedButton(text="VOLTAR", color='#f1ecd1', bgcolor="#673c22",on_click=lambda _: page.go("/pagina_locomocao")),
+                        input_nome_cliente,
+                        input_cpf,
+                        input_endereco,
+                        input_telefone,
+
+                        ft.ResponsiveRow(
+                            [
+                                ft.OutlinedButton(
+                                    text="VOLTAR",
+                                    on_click=lambda _: page.go("/cadastros"),
+                                    col=6
+                                ),
+
+                                # Botão da direita
+                                ft.FilledButton(
+                                    text="Lista cliente",
+                                    on_click=lambda _: page.go("/listrar_clientes"),
+                                    color='#f1ecd1',
+                                    bgcolor='#991C22',
+                                    col=6
+                                ),
+                            ]
+
+                        )
                     ],
                     bgcolor='#f1ecd1',
                     vertical_alignment=MainAxisAlignment.CENTER,
                     horizontal_alignment=CrossAxisAlignment.CENTER,
                 )
             )
+
+
+        page.update()
+
+
+        if page.route == "/listas":
+            page.views.append(
+                View(
+                    "/listas",
+                    [
+                        ft.Container(
+                            ft.Image(src='terceira_tela_lista.png', height=400, width=400),
+                        ),
+
+                        ft.ResponsiveRow(
+                            [
+
+                                ft.FilledButton(
+                                    text="Listar cliente",
+                                    on_click=lambda _: page.go("/listar_clientes"),
+                                    color='#f1ecd1',
+                                    bgcolor='#673c22',
+                                    col=6,
+                                ),
+
+                                ft.FilledButton(
+                                    text="Listar veículo",
+                                    on_click=lambda _: page.go("/listar_veiculos"),
+                                    color='#f1ecd1',
+                                    bgcolor='#673c22',
+                                    col=6,
+                                ),
+
+                                ft.FilledButton(
+                                    text="Listar ordem",
+                                    on_click=lambda _: page.go("/listar_ordens"),
+                                    color='#f1ecd1',
+                                    bgcolor='#673c22',
+                                    col=6,
+                                ),
+
+                                ft.FilledButton(
+                                    text="Listar status",
+                                    on_click=lambda _: page.go("/listar_status"),
+                                    color='#f1ecd1',
+                                    bgcolor='#673c22',
+                                    col=6,
+                                ),
+
+
+                                ElevatedButton(text="VOLTAR", color='#f1ecd1', bgcolor="#673c22",on_click=lambda _: page.go("/pagina_locomocao")),
+                            ]
+                        ),
+                      ],
+                    bgcolor='#f1ecd1',
+                    vertical_alignment=MainAxisAlignment.CENTER,
+                    horizontal_alignment=CrossAxisAlignment.CENTER,
+                )
+            )
+        page.update()
+
+
 
         page.update()
     def voltar(e):
@@ -371,20 +508,73 @@ def main(page: ft.Page):
         print(top_view)
         page.go(top_view.route)
 
-    input_nome_cliente = ft.TextField(label="Digite o nome do cliente: ")
-    input_cpf = ft.TextField(label="Digite o cpf do cliente: ")
-    input_telefone = ft.TextField(label="Digite o telefone do cliente: ")
-    input_endereco = ft.TextField(label="Digite o endereço do cliente: ")
-    input_cliente_associado = ft.TextField(label="Digite o cliente associado do cliente: ")
-    input_marcaVeiculo = ft.TextField(label="Digite o marca do veículo: ")
-    input_modeloVeiculo = ft.TextField(label="Digite o modelo do veiculo:")
-    input_placaVeiculo = ft.TextField(label="Digite a placa do veículo:")
-    input_ano_fabricacao = ft.TextField(label="Digite o ano de fabricação:")
-    input_veiculo_associado = ft.TextField(label="Digite o veiculo associado do cliente: ")
-    input_data_abertura = ft.TextField(label="Digite o data abertura do carro na mecânica: ")
-    input_descricao = ft.TextField(label="Digite a descrição do serviço:")
-    input_status = ft.TextField(label="Digite o status do veiculo: ")
-    input_valor_estimado = ft.TextField(label="Digite o valor estimado do veiculo: ")
+    input_nome_cliente = ft.TextField(
+        bgcolor='#f1ecd1',
+        color='#673c22',
+        label="Digite o nome do cliente: ",
+        hint_text='Ex:Júlia Rafaela '
+    )
+
+    input_cpf = ft.TextField(
+        bgcolor='#f1ecd1',
+        color='#673c22',
+        label="Digite o cpf do cliente: ",
+        hint_text='Ex: 01234567890'
+    )
+
+    input_telefone = ft.TextField(
+        bgcolor='#f1ecd1',
+        color='#673c22',
+        label="Digite o telefone do cliente: ",
+        hint_text='Ex: 00 123456789'
+    )
+
+    input_endereco = ft.TextField(
+        bgcolor='#f1ecd1',
+        color='#673c22',
+        label="Digite o endereço do cliente: ",
+        hint_text='Ex: Rua macânica mater 123'
+    )
+    input_cliente_associado = ft.TextField(
+        label="Digite o cliente associado do cliente: ",
+        hint_text='Ex:'
+    )
+    input_marcaVeiculo = ft.TextField(
+        label="Digite o marca do veículo: ",
+        hint_text='Ex:'
+    )
+    input_modeloVeiculo = ft.TextField(
+        label="Digite o modelo do veiculo:",
+        hint_text='Ex:'
+    )
+    input_placaVeiculo = (ft.TextField(
+        label="Digite a placa do veículo:",
+        hint_text='Ex:')
+    )
+    input_ano_fabricacao = ft.TextField(
+        label="Digite o ano de fabricação:",
+        hint_text='Ex:'
+    )
+    input_veiculo_associado = ft.TextField(
+        label="Digite o veiculo associado do cliente: ",
+        hint_text='Ex:'
+    )
+    input_data_abertura = ft.TextField(
+        label="Digite o data abertura do carro na mecânica: ",
+        hint_text='Ex:'
+    )
+    input_descricao = ft.TextField(
+        label="Digite a descrição do serviço:",
+        hint_text='Ex:'
+    )
+    input_status = ft.TextField(
+        label="Digite o status do veiculo: ",
+        hint_text='Ex:'
+    )
+    input_valor_estimado = ft.TextField(
+        label="Digite o valor estimado do veiculo: ",
+        hint_text='Ex:'
+    )
 
     progress = ft.ProgressRing(visible=False)
 
@@ -409,17 +599,7 @@ def main(page: ft.Page):
     #     on_click=lambda _: mostrar_listaCliente()
     # )
     #
-    # btn_consultar_novoCliente = ft.FilledButton(
-    #     text="Consultar novos clientes",
-    #     width=page.window.width,
-    #     on_click=lambda _: mostrar_novoCliente()
-    # )
 
-    # btn_consultar_veiculo = ft.FilledButton(
-    #     text="Consultar lista veiculos",
-    #     width=page.window.width,
-    #     on_click=lambda _: mostrar_listaVeiculo()
-    # )
 
     txt_nome_cliente = ft.Text(size=16)
     lbl_nome_cliente = ft.Text(value="Nome cliente:",size=18, weight=FontWeight.BOLD)
