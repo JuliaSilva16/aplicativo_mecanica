@@ -351,7 +351,6 @@ def main(page: ft.Page):
                         ft.Container(
                             ft.Image(src='terceira_tela_cadastro.png', height=300, width=300),
                         ),
-
                         ft.ResponsiveRow(
                             [
 
@@ -403,9 +402,11 @@ def main(page: ft.Page):
                 View(
                     "/cadastrar_clientes",
                     [
+                        AppBar(),
                         ft.Container(
                             ft.Image(src='quarta_tela_cadastro.png', height=250, width=250)
                         ),
+                        Text(value=f"Obrigatório preencher todos os campos", color=Colors.BLACK),
                         input_nome_cliente,
                         input_cpf,
                         input_endereco,
@@ -414,8 +415,8 @@ def main(page: ft.Page):
                         ft.ResponsiveRow(
                             [
                                 ft.OutlinedButton(
-                                    text="VOLTAR",
-                                    on_click=lambda _: page.go("/cadastros"),
+                                    text="Salvar",
+                                    on_click=lambda _: salvar_cadastro_cliente(e),
                                     col=6
                                 ),
 
@@ -436,10 +437,90 @@ def main(page: ft.Page):
                     horizontal_alignment=CrossAxisAlignment.CENTER,
                 )
             )
-
-
         page.update()
 
+        if page.route == "/cadastrar_veiculos":
+            page.views.append(
+                View(
+                    "/cadastrar_veiculos",
+                    [
+                        ft.Container(
+                            ft.Image(src='quarta_tela_cadastro.png', height=250, width=250)
+                        ),
+                        input_cliente_associado,
+                        input_marcaVeiculo,
+                        input_modeloVeiculo,
+                        input_placaVeiculo,
+                        input_ano_fabricacao,
+
+                        ft.ResponsiveRow(
+                            [
+                                ft.OutlinedButton(
+                                    text="VOLTAR",
+                                    on_click=lambda _: page.go("/cadastros"),
+                                    col=6
+                                ),
+
+                                # Botão da direita
+                                ft.FilledButton(
+                                    text="Lista cliente",
+                                    on_click=lambda _: page.go("/listrar_veiculos"),
+                                    color='#f1ecd1',
+                                    bgcolor='#991C22',
+                                    col=6
+                                ),
+                            ]
+
+                        )
+                    ],
+                    bgcolor='#f1ecd1',
+                    vertical_alignment=MainAxisAlignment.CENTER,
+                    horizontal_alignment=CrossAxisAlignment.CENTER,
+                )
+            )
+        page.update()
+
+        if page.route == "/cadastrar_ordens":
+            page.views.append(
+                View(
+                    "/cadastrar_ordens",
+                    [
+                        ft.Container(
+                            ft.Image(src='quarta_tela_cadastro.png', height=250, width=250)
+                        ),
+                        input_cliente_associado,
+                        input_veiculo_associado,
+                        input_data_abertura,
+                        input_descricao,
+                        input_status,
+                        input_valor_estimado,
+
+                        ft.ResponsiveRow(
+                            [
+                                ft.OutlinedButton(
+                                    text="VOLTAR",
+                                    on_click=lambda _: page.go("/cadastros"),
+                                    col=6
+                                ),
+
+                                # Botão da direita
+                                ft.FilledButton(
+                                    text="Lista cliente",
+                                    on_click=lambda _: page.go("/listrar_ordens"),
+                                    color='#f1ecd1',
+                                    bgcolor='#991C22',
+                                    col=6
+                                ),
+                            ]
+
+                        )
+                    ],
+                    bgcolor='#f1ecd1',
+                    vertical_alignment=MainAxisAlignment.CENTER,
+                    horizontal_alignment=CrossAxisAlignment.CENTER,
+                )
+            )
+        page.update()
 
         if page.route == "/listas":
             page.views.append(
@@ -500,6 +581,27 @@ def main(page: ft.Page):
 
 
         page.update()
+
+    def salvar_cadastro_cliente(e):
+        if input_nome_cliente.value == '' or input_cpf.value == '' or input_telefone.value == '' or input_endereco.value == '':
+            page.overlay.append(msg_error)
+            msg_error.open = True
+            page.update()
+        else:
+            cadastros_clientes = Cliente(
+                nome_cliente=input_nome_cliente.value,
+                cpf=input_cpf.value,
+                telefone=input_telefone.value,
+                endereco=input_endereco.value,
+            )
+            cadastros_clientes.save()
+            input_nome_cliente.value = ''
+            input_cpf.value = ''
+            input_telefone.value = ''
+            page.overlay.append(msg_sucesso)
+            msg_sucesso.open = True
+            page.update()
+
     def voltar(e):
         print("Views", page.views)
         removida = page.views.pop()
@@ -511,28 +613,28 @@ def main(page: ft.Page):
     input_nome_cliente = ft.TextField(
         bgcolor='#f1ecd1',
         color='#673c22',
-        label="Digite o nome do cliente: ",
+        label="Digite o nome do cliente ",
         hint_text='Ex:Júlia Rafaela '
     )
 
     input_cpf = ft.TextField(
         bgcolor='#f1ecd1',
         color='#673c22',
-        label="Digite o cpf do cliente: ",
+        label="Digite o cpf do cliente ",
         hint_text='Ex: 01234567890'
     )
 
     input_telefone = ft.TextField(
         bgcolor='#f1ecd1',
         color='#673c22',
-        label="Digite o telefone do cliente: ",
+        label="Digite o telefone do cliente ",
         hint_text='Ex: 00 123456789'
     )
 
     input_endereco = ft.TextField(
         bgcolor='#f1ecd1',
         color='#673c22',
-        label="Digite o endereço do cliente: ",
+        label="Digite o endereço do cliente ",
         hint_text='Ex: Rua macânica mater 123'
     )
     input_cliente_associado = ft.TextField(
@@ -540,39 +642,39 @@ def main(page: ft.Page):
         hint_text='Ex:'
     )
     input_marcaVeiculo = ft.TextField(
-        label="Digite o marca do veículo: ",
+        label="Digite o marca do veículo ",
         hint_text='Ex:'
     )
     input_modeloVeiculo = ft.TextField(
-        label="Digite o modelo do veiculo:",
+        label="Digite o modelo do veiculo",
         hint_text='Ex:'
     )
     input_placaVeiculo = (ft.TextField(
-        label="Digite a placa do veículo:",
+        label="Digite a placa do veículo",
         hint_text='Ex:')
     )
     input_ano_fabricacao = ft.TextField(
-        label="Digite o ano de fabricação:",
+        label="Digite o ano de fabricação",
         hint_text='Ex:'
     )
     input_veiculo_associado = ft.TextField(
-        label="Digite o veiculo associado do cliente: ",
+        label="Digite o veiculo associado do cliente ",
         hint_text='Ex:'
     )
     input_data_abertura = ft.TextField(
-        label="Digite o data abertura do carro na mecânica: ",
+        label="Digite o data abertura do carro na mecânica ",
         hint_text='Ex:'
     )
     input_descricao = ft.TextField(
-        label="Digite a descrição do serviço:",
+        label="Digite a descrição do serviço",
         hint_text='Ex:'
     )
     input_status = ft.TextField(
-        label="Digite o status do veiculo: ",
+        label="Digite o status do veiculo ",
         hint_text='Ex:'
     )
     input_valor_estimado = ft.TextField(
-        label="Digite o valor estimado do veiculo: ",
+        label="Digite o valor estimado do veiculo ",
         hint_text='Ex:'
     )
 
