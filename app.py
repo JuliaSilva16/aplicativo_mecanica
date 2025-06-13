@@ -600,6 +600,27 @@ def main(page: ft.Page):
             input_telefone.value = ''
             page.overlay.append(msg_sucesso)
             msg_sucesso.open = True
+
+            page.update()
+
+    def salvar_cadastro_veiculo(e):
+        if input_cliente_associado.value == '' or input_marcaVeiculo.value == '' or input_modeloVeiculo.value == '' or input_placaVeiculo == '' or input_modeloVeiculo.value == '':
+            page.overlay.append(msg_error)
+            msg_error.open = True
+            page.update()
+        else:
+            cadastros_veiculos = Cliente(
+                nome_cliente=input_cliente_associado.value,
+                cpf=input_cpf.value,
+                telefone=input_telefone.value,
+                endereco=input_endereco.value,
+            )
+            cadastros_veiculos.save()
+            input_cliente_associado.value = ''
+            input_cpf.value = ''
+            input_telefone.value = ''
+            page.overlay.append(msg_sucesso)
+            msg_sucesso.open = True
             page.update()
 
     def voltar(e):
