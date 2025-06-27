@@ -579,13 +579,9 @@ def main(page: ft.Page):
                     "/listar_clientes",
                     [
                         lv,
-                        lbl_nome_cliente,
                         txt_nome_cliente,
-                        lbl_cpf,
                         txt_nome_cliente,
-                        lbl_telefone,
                         txt_telefone,
-                        lbl_endereco,
                         txt_endereco,
                     ],
                 )
@@ -598,11 +594,9 @@ def main(page: ft.Page):
                     View(
                         "/listar_clientes",
                         [
-                            lbl_cliente_associado,
                             txt_cliente_associado,
-                            lbl_marcaVeiculo,
                             txt_marcaVeiculo,
-                            lv,
+                            # lv,
                         ]
 
                     )
@@ -645,25 +639,26 @@ def main(page: ft.Page):
         page.update()
         page.go("/detalhes_cleintes")
 
-    def detalhe_veiculo (nome,cpf,telefone,endereco):
-        txt_nome_cliente.value = nome
-        txt_cpf.value = cpf
-        txt_telefone.value = telefone
-        txt_endereco.value = endereco
-
-        page.update()
-        page.go("/detalhes_veiculos")
+    # def detalhe_veiculo (nome,cpf,telefone,endereco):
+    #     txt_nome_cliente.value = nome
+    #     txt_cpf.value = cpf
+    #     txt_telefone.value = telefone
+    #     txt_endereco.value = endereco
+    #
+    #     page.update()
+    #     page.go("/detalhes_veiculos")
 
     def cliente(e):
         lv.controls.clear()
-        sql_clientes = select(Cliente)
-        resultado_clientes = db_session.execute(sql_clientes).scalars()
+        resultado_cliente = get_cliente()
 
-        for cliente in resultado_clientes:
+        print(resultado_cliente)
+
+        for cliente in resultado_cliente:
             lv.controls.append(
                 ft.ListTile(
                     leading=ft.Icon(ft.Icons.PERSON),
-                    title=ft.Text(f"Nome: {cliente.nome}"),
+                    title=ft.Text(f"Nome: {cliente["nome_cliente"]}"),
                     trailing=ft.PopupMenuButton(
                         icon=ft.Icons.MORE_VERT,
                         items=[
@@ -730,15 +725,15 @@ def main(page: ft.Page):
         bgcolor='#f1ecd1',
         color='#673c22',
         label="Digite o telefone do cliente ",
-        hint_text='Ex: 00 123456789'
+        hint_text='Ex: 00123456789'
     )
-
     input_endereco = ft.TextField(
         bgcolor='#f1ecd1',
         color='#673c22',
         label="Digite o endereço do cliente ",
         hint_text='Ex: Rua macânica mater 123'
     )
+
     input_cliente_associado = ft.TextField(
         label="Digite o cliente associado do cliente: ",
         hint_text='Ex:'
@@ -808,24 +803,15 @@ def main(page: ft.Page):
     )
 
     txt_nome_cliente = ft.Text(size=16)
-    lbl_nome_cliente = ft.Text(value="Nome cliente:", size=18, weight=FontWeight.BOLD)
     txt_cpf = ft.Text(size=16)
-    lbl_cpf = ft.Text(value="CPF:", size=18, weight=FontWeight.BOLD)
     txt_telefone = ft.Text(size=16)
-    lbl_telefone = ft.Text(value="Telefone:", size=18, weight=FontWeight.BOLD)
     txt_endereco = ft.Text(size=16)
-    lbl_endereco = ft.Text(value="Endereço:", size=18, weight=FontWeight.BOLD)
 
     txt_cliente_associado = ft.Text(size=16)
-    lbl_cliente_associado = ft.Text(value="Cliente associado:", size=18, weight=FontWeight.BOLD)
     txt_marcaVeiculo = ft.Text(size=16)
-    lbl_marcaVeiculo = ft.Text(value="Marca do veiculo:", size=18, weight=FontWeight.BOLD)
     txt_modeloVeiculo = ft.Text(size=16)
-    lbl_modeloVeiculo = ft.Text(value="Modelo do veiculo:", size=18, weight=FontWeight.BOLD)
     txt_placaVeiculo = ft.Text(size=16)
-    lbl_placaVeiculo = ft.Text(value="Placa do veiculo:", size=18, weight=FontWeight.BOLD)
     txt_ano_fabriacacao = ft.Text(size=16)
-    lbl_ano_fabricacao = ft.Text(value="Anod e fabricação:", size=18, weight=FontWeight.BOLD)
 
 
 
