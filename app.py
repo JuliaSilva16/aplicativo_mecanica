@@ -36,50 +36,18 @@ def main(page: ft.Page):
             return dados_novos_clientes
 
         else:
+            f"Error:{response.status_code}"
             return {f"Erro":response.json()}
-    # post
-    def mostrar_novoCliente():
-        progress.visible = True
-        page.update()
-        if input_cpf.value != "":
-            msg_error.content = ft.Text("CPF INVÁLIDO")
-            page.overlay.append(msg_error)
-            msg_error.open = True
-        else:
-            dadosClientes = post_novo_cliente(input_cpf.value)
-
-            progress.visible = False
-            page.update()
-
-            if "erro" in dadosClientes:
-                page.overlay.append(msg_error)
-                msg_error.open = True
-
-            else:
-                txt_nome_cliente.value = dadosClientes["nome_cliente"]
-                txt_cpf.value = dadosClientes["cpf"]
-                txt_telefone.value = dadosClientes["telefone"]
-                txt_endereco.value = dadosClientes["endereco"]
-                page.go("/segunda")
-
-                input_nome_cliente.value = ""
-                input_cpf.value = ""
-                input_telefone.value = ""
-                input_endereco.value = ""
-                msg_sucesso.content = ft.Text("Informações inválidas")
-                page.overlay.append(msg_sucesso)
-                msg_sucesso.open = True
-
-            page.update()
 
     # get
-    def get_cliente(cpf):
-        url = f"http://10.135.232.19:5000/cliente/{cpf}/json"
+    def get_cliente():
+        url = f"http://10.135.232.19:5000/cliente"
         response = requests.get(url)
 
         if response.status_code == 200:
-            print(f"CPF:",response.json())
-            return response.json()
+            dados_clientes = response.json()
+            print(dados_clientes)
+            return dados_clientes
 
         else:
             print(f"Erro:", response.json())
@@ -93,7 +61,86 @@ def main(page: ft.Page):
         else:
             dadosCliente = get_cliente(input_cpf.value)
 
-    # #post
+    def cliente(e):
+        lv.controls.clear()
+        resultado_cliente = get_cliente()
+
+        print(resultado_cliente)
+
+        for cliente in resultado_cliente:
+            lv.controls.append(
+                ft.ListTile(
+                    leading=ft.Icon(ft.Icons.PERSON),
+                    title=ft.Text(f"Nome: {cliente["nome_cliente"]}"),
+                    trailing=ft.PopupMenuButton(
+                        icon=ft.Icons.MORE_VERT,
+                        items=[
+                            ft.PopupMenuItem(text="Detalhes",on_click=lambda _, c=cliente: detalhe_cliente(c.nome,c.cpf,c.telefone,c.endereco)),
+                        ]
+                    )
+                )
+            )
+
+    def detalhe_cliente (nome,cpf,telefone,endereco):
+        txt_nome_cliente.value = nome
+        txt_cpf.value = cpf
+        txt_telefone.value = telefone
+        txt_endereco.value = endereco
+
+        page.update()
+        page.go("/detalhes_cleintes")
+
+    def cliente(e):
+        lv.controls.clear()
+        resultado_cliente = get_cliente()
+
+        print(resultado_cliente)
+
+        for cliente in resultado_cliente:
+            lv.controls.append(
+                ft.ListTile(
+                    leading=ft.Icon(ft.Icons.PERSON),
+                    title=ft.Text(f"Nome: {cliente["nome_cliente"]}"),
+                    trailing=ft.PopupMenuButton(
+                        icon=ft.Icons.MORE_VERT,
+                        items=[
+                            ft.PopupMenuItem(text="Detalhes",on_click=lambda _, c=cliente: detalhe_cliente(c.nome,c.cpf,c.telefone,c.endereco)),
+                        ]
+                    )
+                )
+            )
+
+    def salvar_cadastro_cliente(e):
+        if input_nome_cliente.value == '' or input_cpf.value == '' or input_telefone.value == '' or input_endereco.value == '':
+            page.overlay.append(msg_error)
+            msg_error.open = True
+            page.update()
+        else:
+            cpf = input_cpf.value
+            telefone = input_telefone.value
+
+            if not cpf.isnumeric() or not telefone.isnumeric():
+                input_cpf.error = True
+                input_telefone.error_text = "Apenas números"
+                page.update()
+                return
+
+            informacoes_clientes = Cliente(
+                nome_cliente=input_nome_cliente.value,
+                cpf=input_cpf.value,
+                telefone=input_telefone.value,
+                endereco=input_endereco.value,
+            )
+            informacoes_clientes.save()
+            input_nome_cliente.value = ''
+            input_cpf.value = ''
+            input_telefone.value = ''
+            page.overlay.append(msg_sucesso)
+            msg_sucesso.open = True
+
+            page.update()
+
+     #post
     def editar_cliente(cliente_id):
         url = f"http://10.135.232.19:5000/cliente/{cliente_id}"
 
@@ -579,10 +626,11 @@ def main(page: ft.Page):
                     "/listar_clientes",
                     [
                         lv,
-                        txt_nome_cliente,
-                        txt_nome_cliente,
-                        txt_telefone,
-                        txt_endereco,
+                        # txt_nome_cliente,
+                        # txt_nome_cliente,
+                        # txt_telefone,
+                        # txt_endereco,
+                        ElevatedButton(text="Editar", on_click=lambda _: editar_cliente(e)),
                     ],
                 )
             )
@@ -596,7 +644,10 @@ def main(page: ft.Page):
                         [
                             txt_cliente_associado,
                             txt_marcaVeiculo,
-                            # lv,
+                            txt_modeloVeiculo,
+                            txt_placaVeiculo,
+                            txt_ano_fabriacacao,
+                            lv,
                         ]
 
                     )
@@ -630,73 +681,6 @@ def main(page: ft.Page):
             page.update()
         page.update()
 
-    def detalhe_cliente (nome,cpf,telefone,endereco):
-        txt_nome_cliente.value = nome
-        txt_cpf.value = cpf
-        txt_telefone.value = telefone
-        txt_endereco.value = endereco
-
-        page.update()
-        page.go("/detalhes_cleintes")
-
-    # def detalhe_veiculo (nome,cpf,telefone,endereco):
-    #     txt_nome_cliente.value = nome
-    #     txt_cpf.value = cpf
-    #     txt_telefone.value = telefone
-    #     txt_endereco.value = endereco
-    #
-    #     page.update()
-    #     page.go("/detalhes_veiculos")
-
-    def cliente(e):
-        lv.controls.clear()
-        resultado_cliente = get_cliente()
-
-        print(resultado_cliente)
-
-        for cliente in resultado_cliente:
-            lv.controls.append(
-                ft.ListTile(
-                    leading=ft.Icon(ft.Icons.PERSON),
-                    title=ft.Text(f"Nome: {cliente["nome_cliente"]}"),
-                    trailing=ft.PopupMenuButton(
-                        icon=ft.Icons.MORE_VERT,
-                        items=[
-                            ft.PopupMenuItem(text="Detalhes",on_click=lambda _, c=cliente: detalhe_cliente(c.nome,c.cpf,c.telefone,c.endereco)),
-                        ]
-                    )
-                )
-            )
-
-    def salvar_cadastro_cliente(e):
-        if input_nome_cliente.value == '' or input_cpf.value == '' or input_telefone.value == '' or input_endereco.value == '':
-            page.overlay.append(msg_error)
-            msg_error.open = True
-            page.update()
-        else:
-            cpf = input_cpf.value
-            telefone = input_telefone.value
-
-            if not cpf.isnumeric() or not telefone.isnumeric():
-                input_cpf.error = True
-                input_telefone.error_text = "Apenas números"
-                page.update()
-                return
-
-            informacoes_clientes = Cliente(
-                nome_cliente=input_nome_cliente.value,
-                cpf=input_cpf.value,
-                telefone=input_telefone.value,
-                endereco=input_endereco.value,
-            )
-            informacoes_clientes.save()
-            input_nome_cliente.value = ''
-            input_cpf.value = ''
-            input_telefone.value = ''
-            page.overlay.append(msg_sucesso)
-            msg_sucesso.open = True
-
-            page.update()
 
 
     def voltar(e):
