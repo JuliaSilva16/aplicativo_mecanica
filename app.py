@@ -11,14 +11,14 @@ from flet.core.colors import Colors
 from flet.core.types import FontWeight, MainAxisAlignment, CrossAxisAlignment
 
 from models import *
-
+#id = 0
 def main(page: ft.Page):
     page.title = "Aplicativo mecânica"
     page.theme_mode = ft.ThemeMode.DARK
     page.window.width = 375
     page.window.height = 667
 
-    #post
+    #post_cadastro cliente
     def post_novo_cliente():
         url = "http://10.135.232.19:5000/novo_cliente"
 
@@ -39,9 +39,9 @@ def main(page: ft.Page):
             f"Error:{response.status_code}"
             return {f"Erro":response.json()}
 
-    # get
+    # get_lista do cliente
     def get_cliente():
-        url = f"http://10.135.232.19:5000/cliente"
+        url = f"http://10.135.235.38:5000/clientes"
         response = requests.get(url)
 
         if response.status_code == 200:
@@ -50,45 +50,16 @@ def main(page: ft.Page):
             return dados_clientes
 
         else:
-            print(f"Erro:", response.json())
+            return response.json()
 
-    def mostrar_listaCliente():
-        progress.visible = True
-        page.update()
-        if input_cpf.value != "":
-            msg_error.content = ft.Text("CPF inválido")
-            page.overlay.append(msg_error)
-        else:
-            dadosCliente = get_cliente(input_cpf.value)
-
-    def cliente(e):
-        lv.controls.clear()
-        resultado_cliente = get_cliente()
-
-        print(resultado_cliente)
-
-        for cliente in resultado_cliente:
-            lv.controls.append(
-                ft.ListTile(
-                    leading=ft.Icon(ft.Icons.PERSON),
-                    title=ft.Text(f"Nome: {cliente["nome_cliente"]}"),
-                    trailing=ft.PopupMenuButton(
-                        icon=ft.Icons.MORE_VERT,
-                        items=[
-                            ft.PopupMenuItem(text="Detalhes",on_click=lambda _, c=cliente: detalhe_cliente(c.nome,c.cpf,c.telefone,c.endereco)),
-                        ]
-                    )
-                )
-            )
-
-    def detalhe_cliente (nome,cpf,telefone,endereco):
-        txt_nome_cliente.value = nome
-        txt_cpf.value = cpf
-        txt_telefone.value = telefone
-        txt_endereco.value = endereco
-
-        page.update()
-        page.go("/detalhes_cleintes")
+    # def mostrar_listaCliente():
+    #     progress.visible = True
+    #     page.update()
+    #     if input_cpf.value != "":
+    #         msg_error.content = ft.Text("CPF inválido")
+    #         page.overlay.append(msg_error)
+    #     else:
+    #         dadosCliente = get_cliente(input_cpf.value)
 
     def cliente(e):
         lv.controls.clear()
@@ -104,11 +75,21 @@ def main(page: ft.Page):
                     trailing=ft.PopupMenuButton(
                         icon=ft.Icons.MORE_VERT,
                         items=[
-                            ft.PopupMenuItem(text="Detalhes",on_click=lambda _, c=cliente: detalhe_cliente(c.nome,c.cpf,c.telefone,c.endereco)),
+                            ft.PopupMenuItem(text="Detalhes",on_click=lambda _, c=cliente: detalhe_cliente(c)),
                         ]
                     )
                 )
             )
+
+    def detalhe_cliente (cliente):
+        txt_nome_cliente.value = cliente["nome_cliente"],
+        txt_cpf.value = cliente["cpf"],
+        txt_telefone.value = cliente["telefone"],
+        txt_endereco.value = cliente["endereco"],
+
+        page.go("/detalhe_cliente")
+        page.update()
+
 
     def salvar_cadastro_cliente(e):
         if input_nome_cliente.value == '' or input_cpf.value == '' or input_telefone.value == '' or input_endereco.value == '':
@@ -140,128 +121,238 @@ def main(page: ft.Page):
 
             page.update()
 
-     #post
+     #put
     def editar_cliente(cliente_id):
-        url = f"http://10.135.232.19:5000/cliente/{cliente_id}"
+        url = f"http://10.135.232.19:5000/editar_veiculo"
 
-        editar_cliente={
-            "nome_cliente": ["nome_cliente"],
-            "CPF":["cpf"],
-            "telefone":["telefone"],
-            "endereco":["endereco"]
+        editar_cliente = {
+            "Nome": input_nome_cliente.value,
+            "CPF": input_cpf.value,
+            "Telefone": input_telefone.value,
+            "Endereço": input_endereco.value,
         }
-        antes_cliente = requests.post(url)
-        response = requests.put(url, json=editar_cliente)
 
-        if response.status_code != 200:
-            if antes_cliente.status_code != 200:
-                dados_antes = antes_cliente.json()
-                print(f"Nome do cliente: {dados_antes['nome_cliente']}")
-                print(f"CPF: {dados_antes['cpf']}")
-                print(f"Telefone: {dados_antes['telefone']}")
-                print(f"Endereco: {dados_antes['endereco']}")
-            else:
-                print(f"Erro: {response.status_code}")
-            dados_putCliente = response.json()
-            print(f"Nome do cliente: {dados_putCliente['nome_cliente']}")
-            print(f"CPF: {dados_putCliente['cpf']}")
-            print(f"Telefone: {dados_putCliente['telefone']}")
-            print(f"Endereco: {dados_putCliente['endereco']}")
+        response = requests.put(url, json=editar_veiculo)
+
+        if response.status_code == 200:
+            page.go("/lista_clientes")
+            page.update()
         else:
-            print(f"Erro: {response.status_code}")
+            print(f' Erro: {response.json()}')
+            return {
+                "error": response.json()
+            }
 
-    def novo_veiculo():
-        url = f"http://10.135.232.19:5000/novo_veiculo"
 
-        novo_veiculo = {
-            "Cliente_associado":["clinte_associado"],
-            "Marca_veiculo":["marca_veiculo"],
-            "Modelo_veiculo":["modelo_veiculo"],
-            "Placa_veiculo":["placa_veiculo"],
-            "Ano_fabricacao":["ano_fabricacao"],
+#---------------------------------------------------------------------------------------
+    # post_cadastro veiculo
+    def post_novo_veiculo():
+        url = "http://10.135.232.19:5000/novo_cliente"
+
+        new_veiculo = {
+            "Cliente associado": input_cliente_associado.value,
+            "cliente_associado": input_marcaVeiculo.value,
+            "Modelo": input_modeloVeiculo.value,
+            "Placa": input_placaVeiculo.value,
+            "Ano de fabricação": input_ano_fabricacao.value,
         }
-        response = requests.post(url, json=novo_veiculo)
+        response_veiculo = requests.post(url, json=new_veiculo)
 
-        if response.status_code != 201:
-            dados_novos_veiculos = response.json()
-            print(f"Cliente_associado : {dados_novos_veiculos['cliente_associado']}")
-            print(f"Marca_veiculo: {dados_novos_veiculos['marca_veiculo']}")
-            print(f"Modelo_veiculo: {dados_novos_veiculos['modelo_veiculo']}")
-            print(f"Placa_veiculo: {dados_novos_veiculos['placa_veiculo']}")
-            print(f"Ano_fabricacao:{dados_novos_veiculos['ano_fabricacao']}")
+        if response_veiculo.status_code != 201:
+            dados_novos_veiculos = response_veiculo.json()
+            print(f"Informação:novo cliente cadastrado com sucesso!")
+            return dados_novos_veiculos
+
         else:
-            print(f"Erro: {response.status_code}")
+            f"Error:{response_veiculo.status_code}"
+            return {f"Erro": response_veiculo.json()}
 
-    def veiculo(id_veiculo):
-        url = f"http://10.135.232.19:5000/clientes/{id_veiculo}"
+    #get_listar veiculo
+    def get_veiculos():
+        url = f"http://10.135.235.38:5000/veiculos"
         response = requests.get(url)
 
-        if response.status_code != 200:
-            dados_clientes = response.json()
-            print(f"Cliente associado: {dados_clientes['cliente_associado']}")
-            print(f"Marca: {dados_clientes['marca_veiculo']}")
-            print(f"Modelo: {dados_clientes['modelo_veiculo']}")
-            print(f"Placa: {dados_clientes['placa_veiculo']}")
-            print(f"Ano de fabricação: {dados_clientes['ano_fabricacao']}")
+        if response.status_code == 200:
+            dados_veiculos = response.json()
+            print(dados_veiculos)
+            return dados_veiculos
+
         else:
-            print(f"Erro: {response.status_code}")
+                return response.json()
+
+    def veiculo(e):
+        lv.controls.clear()
+        resultado_veiculo = get_veiculos()
+        print(resultado_veiculo)
+        for veiculo in resultado_veiculo:
+            lv.controls.append(
+                ft.ListTile(
+                    leading=ft.Icon(ft.Icons.PERSON),
+                    title=ft.Text(f"Nome do cliente da veiculo: {veiculo["cliente_associado"]}"),
+                    trailing=ft.PopupMenuButton(
+                        icon=ft.Icons.MORE_VERT,
+                        items=[
+                            ft.PopupMenuItem(text="Detalhes",on_click=lambda _, v=veiculo: detalhe_veiculo(v)),
+                        ]
+                    )
+                )
+            )
+
+    def detalhe_veiculo(veiculo):
+        txt_cliente_associado.value = veiculo['cliente_associado'],
+        txt_marcaVeiculo.value = veiculo['marcaVeiculo'],
+        txt_modeloVeiculo.value = veiculo['modeloVeiculo'],
+        txt_placaVeiculo.value = veiculo['placaVeiculo'],
+        txt_ano_fabriacacao.value = veiculo['ano_fabriacacao'],
+
+        page.update()
+        page.go("/detalhes_veiculo")
+
+
+        # get_lista de veiculo
+        def get_veiculo():
+            url = f"http://10.135.235.38:5000/clientes"
+            response = requests.get(url)
+
+            if response.status_code == 200:
+                dados_veiculo = response.json()
+                print(dados_veiculo)
+                return dados_veiculo
+
+            else:
+                return response.json()
+
+        def veiculo(id_veiculo):
+            url = f"http://10.135.232.19:5000/veiculo/{id_veiculo}"
+            response = requests.get(url)
+
+            if response.status_code != 200:
+                dados_veiculo = response.json()
+                print(f"Cliente associado: {dados_veiculo['cliente_associado']}")
+                print(f"Marca: {dados_veiculo['marca_veiculo']}")
+                print(f"Modelo: {dados_veiculo['modelo_veiculo']}")
+                print(f"Placa: {dados_veiculo['placa_veiculo']}")
+                print(f"Ano de fabricação: {dados_veiculo['ano_fabricacao']}")
+            else:
+                print(f"Erro: {response.status_code}")
+
+    def salvar_cadastro_veiculos(e):
+        if input_cliente_associado.value == '' or input_marcaVeiculo.value == '' or input_modeloVeiculo.value == '' or input_placaVeiculo.value == '' or input_ano_fabricacao.value == '':
+            page.overlay.append(msg_error)
+            msg_error.open = True
+            page.update()
+        else:
+            placaVeiculo = input_placaVeiculo.value
+
+            if not placaVeiculo.isnumeric():
+                input_placaVeiculo.error = True
+                page.update()
+                return
+
+            informacoes_veiculos = Veiculo(
+                cliente_associado=int(input_cliente_associado.value),
+                marca_veiculo=input_marcaVeiculo.value,
+                modelo_veiculo=input_modeloVeiculo.value,
+                placa_veiculo=input_placaVeiculo.value,
+                ano_fabricacao=input_ano_fabricacao.value,
+            )
+            informacoes_veiculos.save()
+            input_cliente_associado.value = ''
+            input_marcaVeiculo.value = ''
+            input_modeloVeiculo.value = ''
+            input_placaVeiculo.value = ''
+            input_ano_fabricacao.value = ''
+            page.overlay.append(msg_sucesso)
+            msg_sucesso.open = True
+
+            page.update()
 
     def editar_veiculo(veiculo_id):
         url = f"http://10.135.232.19:5000/editar_veiculo"
 
-        editar_veiculo={
-            "cliente associado": ["cliente_associado"],
-            "Marca_veiculo": ["marca_veiculo"],
-            "Modelo_veiculo": ["modelo_veiculo"],
-            "Placa_veiculo": ["placa_veiculo"],
-            "Ano_fabricacao": ["ano_fabricacao"],
+        editar_veiculo = {
+            "cliente associado": input_cliente_associado.value,
+            "Marca_veiculo": input_marcaVeiculo.value,
+            "Modelo_veiculo": input_modeloVeiculo.value,
+            "Placa_veiculo": input_placaVeiculo.value,
+            "Ano_fabricacao": input_ano_fabricacao
         }
-        antes_veiculo = requests.post(url)
+
         response = requests.put(url, json=editar_veiculo)
 
-        if response.status_code != 200:
-            if antes_veiculo.status_code != 200:
-                dados_antes = antes_veiculo.json()
-                print(f"cliente associado : {dados_antes['cliente_associado']}")
-                print(f"Marca: {dados_antes['marca_veiculo']}")
-                print(f"Modelo: {dados_antes['modelo_veiculo']}")
-                print(f"Placa: {dados_antes['placa_veiculo']}")
-                print(f"Ano defabricação: {dados_antes['ano_fabricacao']}")
-            else:
-                print(f"Erro: {response.status_code}")
-
-            dados_putVeiculo = response.json()
-            print(f"cliente associado : {dados_putVeiculo['cliente_associado']}")
-            print(f"marca : {dados_putVeiculo['marca_veiculo']}")
-            print(f"modelo: {dados_putVeiculo['modelo_veiculo']}")
-            print(f"placa: {dados_putVeiculo['placa_veiculo']}")
-            print(f"ano fabricacao : {dados_putVeiculo['ano_fabricacao']}")
+        if response.status_code == 200:
+            page.go("/lista_veiculos")
+            page.update()
         else:
-            print(f"Erro: {response.status_code}")
+            print(f' Erro: {response.json()}')
+            return {
+                "error": response.json()
+            }
 
-    def nova_ordem():
-        url = f"http://10.135.232.19:5000/nova_ordem"
+#----------------------------------------------------------------------------------------
+    # post_cadastro ordem
+    def post_novas_ordens():
+        url = "http://10.135.232.19:5000/novo_cliente"
 
-        nova_ordem={
-            "cliente associado": ["cliente_associado"],
-            "Veiculo associado": ["veiculo_associado"],
-            "Data de abertura": ["data_abertura"],
-            "Descrição": ["descricao_servico"],
-            "Status": ["status"],
-            "Valor estimado": ["valor_estimado"],
+        new_ordem = {
+            "Cliente associado" : input_cliente_associado.value,
+            "Veiculo associado": input_veiculo_associado.value,
+            "Data de abertura": input_data_abertura.value,
+            "Descrição": input_descricao.value,
+            "Status": input_status.value,
+            "Valor estimado": input_valor_estimado.value,
         }
-        response = requests.post(url, json=nova_ordem)
+        response_ordem = requests.post(url, json=new_ordem)
 
-        if response.status_code != 201:
-            dados_nova_ordem = response.json()
-            print(f"Cliente associado : {dados_nova_ordem['cliente_associado']}")
-            print(f"Veiculo associado: {dados_nova_ordem['veiculo_associado']}")
-            print(f"Data de abertura: {dados_nova_ordem['data_abertura']}")
-            print(f"Descrição: {dados_nova_ordem['descricao_servico']}")
-            print(f"Status: {dados_nova_ordem['status']}")
-            print(f"Valor estimado: {dados_nova_ordem['valor_estimado']}")
+        if response_ordem.status_code != 201:
+            dados_nova_ordem= response_ordem.json()
+            print(f"Informação:novo cliente cadastrado com sucesso!")
+            return dados_nova_ordem
+
         else:
-            print(f"Erro: {response.status_code}")
+            f"Error:{response_ordem.status_code}"
+            return {f"Erro": response_ordem.json()}
+
+    # get_listar ordem
+    def get_ordens():
+        url = f"http://10.135.235.38:5000/veiculos"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            dados_ordem = response.json()
+            print(dados_ordem)
+            return dados_ordem
+
+        else:
+            return response.json()
+
+    def ordem(e):
+        lv.controls.clear()
+        resultado_ordem = get_ordens()
+        print(resultado_ordem)
+        for ordem in resultado_ordem:
+            lv.controls.append(
+                ft.ListTile(
+                    leading=ft.Icon(ft.Icons.PERSON),
+                    title=ft.Text(f"Nome do cliente associado: {ordem["cliente_associado"]}"),
+                    trailing=ft.PopupMenuButton(
+                        icon=ft.Icons.MORE_VERT,
+                        items=[
+                            ft.PopupMenuItem(text="Detalhes",on_click=lambda _, o=ordem: detalhe_ordem(o)),
+                        ]
+                    )
+                )
+            )
+
+    def detalhe_ordem(ordem):
+        txt_cliente_associado.value = ordem['cliente_associado'],
+        txt_marcaVeiculo.value = ordem['marcaVeiculo'],
+        txt_modeloVeiculo.value = ordem['modeloVeiculo'],
+        txt_placaVeiculo.value = ordem['placaVeiculo'],
+        txt_ano_fabriacacao.value = ordem['ano_fabriacacao'],
+
+        page.update()
+        page.go("/detalhes_veiculo")
 
     def ordem_servico(id_ordem):
         url = f"http://10.135.232.19:5000/ordem_servico"
@@ -277,6 +368,43 @@ def main(page: ft.Page):
             print(f"Valor estimado: {dados_ordem_servico['valor_estimado']}")
         else:
             print(f"Erro: {response.status_code}")
+
+    def salvar_cadastro_ordens(e):
+        if input_cliente_associado.value == '' or input_veiculo_associado.value == '' or input_data_abertura.value == '' or input_descricao.value == '' or input_status.value == '' or input_valor_estimado.value == '':
+            page.overlay.append(msg_error)
+            msg_error.open = True
+            page.update()
+        else:
+            valor_estimado = input_valor_estimado.value
+            data_abertura = input_data_abertura.value
+            id_veiculo_associado = input_cliente_associado.value
+
+            if not valor_estimado.isnumeric() or not data_abertura.isnumeric() or not id_veiculo_associado.isnumeric():
+                input_valor_estimado.error = "Apenas números"
+                input_data_abertura.error_text = "Apenas números"
+                page.update()
+                return
+
+            informacoes_ordens = Ordem_servico(
+                cliente_associado=input_cliente_associado.value,
+                veiculo_associado=input_veiculo_associado.value,
+                data_abertura=input_data_abertura.value,
+                descricao=input_descricao.value,
+                status=input_status.value,
+                valor_estimado=input_valor_estimado,
+            )
+
+            informacoes_ordens.save()
+            input_cliente_associado.value = ''
+            input_veiculo_associado.value = ''
+            input_data_abertura.value = ''
+            input_descricao.value = ''
+            input_status.value = ''
+            input_valor_estimado.value = ''
+            page.overlay.append(msg_sucesso)
+            msg_sucesso.open = True
+
+            page.update()
 
     def editar_ordem_servico(veiculo_id):
         url = "http://10.135.232.19:5000/editar_ordem_servico"
@@ -315,6 +443,7 @@ def main(page: ft.Page):
             print(f"Valor estimado: {dados_putOrdem['valor_estimado']}")
         else:
             print(f"Erro: {response.status_code}")
+#------------------------------------------------------------
     # get
     def status(status02):
         url = "http://10.135.232.19:5000/status02"
@@ -325,6 +454,25 @@ def main(page: ft.Page):
             print(f"LISTA:{dados_status02}")
         else:
             print(f"Erro: {response.status_code}")
+#----------------------------------------------------------------
+    def status_icon():
+        def icon(e):
+            t.value = f"Status:  {e.control.value}"
+            t.update()
+
+        t = ft.Text()
+        cg = ft.RadioGroup(
+            content=ft.Column(
+                [
+                    ft.Radio(value="red", label="Red"),
+                    ft.Radio(value="green", label="Green"),
+                    ft.Radio(value="blue", label="Blue"),
+                ]
+            ),
+            on_change=radiogroup_changed,
+        )
+
+        return ft.Column([ft.Text("Select your favorite color:"), cg, t])
 
     def gerencia_rotas(e):
         page.views.clear()
@@ -443,11 +591,20 @@ def main(page: ft.Page):
                 View(
                     "/cadastrar_clientes",
                     [
-                        AppBar(),
+                        ft.Row([
+                            ft.FilledButton(
+                                text="←--",
+                                on_click=lambda _: page.go("/cadastros"),
+                                color='#f1ecd1',
+                                bgcolor='#991C22',
+                                col=6,
+                            )
+                        ]),
+
                         ft.Container(
-                            ft.Image(src='quarta_tela_cadastro.png', height=250, width=250)
+                            ft.Image(src='quarta_tela_cadastro.png', width=250)
                         ),
-                        # Text(value=f"Obrigatório preencher todos os campos", color=Colors.BLACK),
+                         #Text(value=f"Obrigatório preencher todos os campos", color=Colors.BLACK),
 
                         input_nome_cliente,
                         input_cpf,
@@ -455,10 +612,13 @@ def main(page: ft.Page):
                         input_telefone,
                         ft.ResponsiveRow(
                             [
-                                ft.OutlinedButton(
+                                ft.FilledButton(
                                     text="Salvar",
                                     on_click=lambda _: salvar_cadastro_cliente(e),
-                                    col=6
+                                    col=6,
+                                    color = '#991C22',
+                                    bgcolor = '#F00138',
+
                                 ),
 
                                 # Botão da direita
@@ -474,7 +634,6 @@ def main(page: ft.Page):
                         )
                     ],
                     bgcolor='#f1ecd1',
-                    vertical_alignment=MainAxisAlignment.CENTER,
                     horizontal_alignment=CrossAxisAlignment.CENTER,
                 )
             )
@@ -485,8 +644,19 @@ def main(page: ft.Page):
                 View(
                     "/cadastrar_veiculos",
                     [
+                        ft.Row([
+                            ft.FilledButton(
+                                text="←--",
+                                on_click=lambda _: page.go("/cadastros"),
+                                color='#f1ecd1',
+                                bgcolor='#991C22',
+                                col=6,
+                            )
+                        ]),
+
                         ft.Container(
-                            ft.Image(src='quarta_tela_cadastro.png', height=250, width=250)
+                            ft.Image(src='quarta_tela_cadastro.png', width=250)
+
                         ),
                         input_cliente_associado,
                         input_marcaVeiculo,
@@ -496,15 +666,18 @@ def main(page: ft.Page):
 
                         ft.ResponsiveRow(
                             [
-                                ft.OutlinedButton(
-                                    text="VOLTAR",
-                                    on_click=lambda _: page.go("/cadastros"),
-                                    col=6
+                                ft.FilledButton(
+                                    text="Salvar",
+                                    on_click=lambda _: salvar_cadastro_veiculos(e),
+                                    col=6,
+                                    color = '#991C22',
+                                    bgcolor = '#F00138',
                                 ),
+
 
                                 # Botão da direita
                                 ft.FilledButton(
-                                    text="Lista cliente",
+                                    text="Lista de veiculos",
                                     on_click=lambda _: page.go("/listrar_veiculos"),
                                     color='#f1ecd1',
                                     bgcolor='#991C22',
@@ -515,7 +688,6 @@ def main(page: ft.Page):
                         )
                     ],
                     bgcolor='#f1ecd1',
-                    vertical_alignment=MainAxisAlignment.CENTER,
                     horizontal_alignment=CrossAxisAlignment.CENTER,
                 )
             )
@@ -526,22 +698,33 @@ def main(page: ft.Page):
                 View(
                     "/cadastrar_ordens",
                     [
+                        ft.Row([
+                            ft.FilledButton(
+                                text="←--",
+                                on_click=lambda _: page.go("/cadastros"),
+                                color='#f1ecd1',
+                                bgcolor='#991C22',
+                                col=6,
+                            )
+                        ]),
                         ft.Container(
-                            ft.Image(src='quarta_tela_cadastro.png', height=250, width=250)
+                            ft.Image(src='quarta_tela_cadastro.png', width=250)
                         ),
                         input_cliente_associado,
                         input_veiculo_associado,
                         input_data_abertura,
                         input_descricao,
-                        input_status,
+                        cg,
                         input_valor_estimado,
 
                         ft.ResponsiveRow(
                             [
-                                ft.OutlinedButton(
-                                    text="VOLTAR",
-                                    on_click=lambda _: page.go("/cadastros"),
-                                    col=6
+                                ft.FilledButton(
+                                    text="Salvar",
+                                    on_click=lambda _: salvar_cadastro_ordens(e),
+                                    col=6,
+                                    color='#991C22',
+                                    bgcolor='#F00138',
                                 ),
 
                                 # Botão da direita
@@ -549,7 +732,7 @@ def main(page: ft.Page):
                                     text="Lista cliente",
                                     on_click=lambda _: page.go("/listrar_ordens"),
                                     color='#f1ecd1',
-                                    bgcolor='#991C22',
+                                    bgcolor='#F65346',
                                     col=6
                                 ),
                             ]
@@ -557,7 +740,6 @@ def main(page: ft.Page):
                         )
                     ],
                     bgcolor='#f1ecd1',
-                    vertical_alignment=MainAxisAlignment.CENTER,
                     horizontal_alignment=CrossAxisAlignment.CENTER,
                 )
             )
@@ -568,6 +750,7 @@ def main(page: ft.Page):
                 View(
                     "/listas",
                     [
+
                         ft.Container(
                             ft.Image(src='terceira_tela_lista.png', height=400, width=400),
                         ),
@@ -625,11 +808,19 @@ def main(page: ft.Page):
                 View(
                     "/listar_clientes",
                     [
+                        ft.Row([
+                            ft.FilledButton(
+                                text="←--",
+                                on_click=lambda _: page.go("/cadastros"),
+                                color='#f1ecd1',
+                                bgcolor='#991C22',
+                                col=6,
+                            )
+                        ]),
+                        ft.Container(
+                            ft.Image(src='quarta_tela_cadastro.png', width=250)
+                        ),
                         lv,
-                        # txt_nome_cliente,
-                        # txt_nome_cliente,
-                        # txt_telefone,
-                        # txt_endereco,
                         ElevatedButton(text="Editar", on_click=lambda _: editar_cliente(e)),
                     ],
                 )
@@ -637,17 +828,26 @@ def main(page: ft.Page):
         page.update()
 
         if page.route == "/listar_veiculos":
-            if page.route == "/listar_clientes":
+            veiculo(e)
+            if page.route == "/listar_veiculos":
                 page.views.append(
                     View(
-                        "/listar_clientes",
+                        "/listar_veiculos",
                         [
-                            txt_cliente_associado,
-                            txt_marcaVeiculo,
-                            txt_modeloVeiculo,
-                            txt_placaVeiculo,
-                            txt_ano_fabriacacao,
+                            ft.Row([
+                                ft.FilledButton(
+                                    text="←--",
+                                    on_click=lambda _: page.go("/cadastros"),
+                                    color='#f1ecd1',
+                                    bgcolor='#991C22',
+                                    col=6,
+                                )
+                            ]),
+                            ft.Container(
+                                ft.Image(src='quarta_tela_cadastro.png', width=250)
+                            ),
                             lv,
+                            ElevatedButton(text="Editar", on_click=lambda _: editar_veiculo(e)),
                         ]
 
                     )
@@ -655,19 +855,32 @@ def main(page: ft.Page):
             page.update()
 
         if page.route == "/listar_ordens":
-            if page.route == "/listar_clientes":
-                page.views.append(
-                    View(
-                        "/listar_clientes",
-                        [
-                            lv,
-                        ]
-
-                    )
+            ordem(e)
+            page.views.append(
+                View(
+                    "/listar_ordens",
+                    [
+                        ft.Row([
+                            ft.FilledButton(
+                                text="←--",
+                                on_click=lambda _: page.go("/cadastros"),
+                                color='#f1ecd1',
+                                bgcolor='#991C22',
+                                col=6,
+                            )
+                        ]),
+                        ft.Container(
+                            ft.Image(src='quarta_tela_cadastro.png', width=250)
+                        ),
+                        lv,
+                        ElevatedButton(text="Editar", on_click=lambda _: editar_ordem_servico(e)),
+                    ],
                 )
+            )
             page.update()
 
         if page.route == "/listar_status":
+            status(e)
             if page.route == "/listar_clientes":
                 page.views.append(
                     View(
@@ -679,6 +892,77 @@ def main(page: ft.Page):
                     )
                 )
             page.update()
+        page.update()
+
+        if page.route == "/detalhe_cliente":
+            page.views.append(
+                View(
+                    "/detalhe_cliente",
+                    [
+                        ft.Row([
+                            ft.FilledButton(
+                                text="←--",
+                                on_click=lambda _: page.go("/listar_clientes"),
+                                color='#f1ecd1',
+                                bgcolor='#991C22',
+                                col=6,
+                            )
+                        ]),
+                        txt_nome_cliente,
+                        txt_cpf,
+                        txt_telefone,
+                        txt_endereco,
+
+                    ],
+                )
+            )
+        page.update()
+
+        if page.route == "/detalhe_veiculo":
+            page.views.append(
+                View(
+                    "/detalhe_veiculo",
+                    [
+                        ft.Row([
+                            ft.FilledButton(
+                                text="←--",
+                                on_click=lambda _: page.go("/listar_veiculo"),
+                                color='#f1ecd1',
+                                bgcolor='#991C22',
+                                col=6,
+                            )
+                        ]),
+                        lv,
+
+                    ],
+                )
+            )
+        page.update()
+
+        if page.route == "/detalhe_ordens":
+            page.views.append(
+                View(
+                    "/detalhe_ordens",
+                    [
+                        ft.Row([
+                            ft.FilledButton(
+                                text="←--",
+                                on_click=lambda _: page.go("/listar_ordens"),
+                                color='#f1ecd1',
+                                bgcolor='#991C22',
+                                col=6,
+                            )
+                        ]),
+                        txt_cliente_associado,
+                        txt_veiculo_associado,
+                        txt_data_abertura,
+                        txt_descricao,
+                        txt_status,
+                        txt_valor_estimado,
+
+                    ],
+                )
+            )
         page.update()
 
 
@@ -692,6 +976,7 @@ def main(page: ft.Page):
         page.go(top_view.route)
 
     input_nome_cliente = ft.TextField(
+        fill_color=Colors.WHITE,
         bgcolor='#f1ecd1',
         color='#673c22',
         label="Digite o nome do cliente ",
@@ -720,11 +1005,11 @@ def main(page: ft.Page):
 
     input_cliente_associado = ft.TextField(
         label="Digite o cliente associado do cliente: ",
-        hint_text='Ex:'
+        hint_text='Ex:1'
     )
     input_marcaVeiculo = ft.TextField(
         label="Digite o marca do veículo ",
-        hint_text='Ex:'
+        hint_text='Ex:HB20S'
     )
     input_modeloVeiculo = ft.TextField(
         label="Digite o modelo do veiculo",
@@ -732,31 +1017,38 @@ def main(page: ft.Page):
     )
     input_placaVeiculo = (ft.TextField(
         label="Digite a placa do veículo",
-        hint_text='Ex:')
+        hint_text='Ex:BR123')
     )
     input_ano_fabricacao = ft.TextField(
         label="Digite o ano de fabricação",
-        hint_text='Ex:'
+        hint_text='Ex:2010'
     )
     input_veiculo_associado = ft.TextField(
         label="Digite o veiculo associado do cliente ",
-        hint_text='Ex:'
+        hint_text='Ex:2'
     )
     input_data_abertura = ft.TextField(
         label="Digite o data abertura do carro na mecânica ",
-        hint_text='Ex:'
+        hint_text='Ex: 10/02/2025'
     )
     input_descricao = ft.TextField(
         label="Digite a descrição do serviço",
-        hint_text='Ex:'
+        hint_text='Ex:Motor'
     )
-    input_status = ft.TextField(
-        label="Digite o status do veiculo ",
-        hint_text='Ex:'
-    )
+
     input_valor_estimado = ft.TextField(
         label="Digite o valor estimado do veiculo ",
-        hint_text='Ex:'
+        hint_text='Ex:198.65'
+    )
+
+    cg = ft.RadioGroup(
+        content=ft.Column(
+            [
+                ft.Radio(value="pendente", label="Pendente"),
+                ft.Radio(value="andamento", label="Em andamento"),
+                ft.Radio(value="concluido", label="concluído"),
+            ]
+        ),
     )
 
     progress = ft.ProgressRing(visible=False)
@@ -775,15 +1067,10 @@ def main(page: ft.Page):
         bgcolor=Colors.RED
     )
 
-    input_cpf = ft.TextField(
-        label="CPF",
-        hint_text="Ex: 12345678910"
-    )
-
     btn_consultar_cliente = ft.FilledButton(
         text="Consultar lista de clientes",
         width=page.window.width,
-        on_click=lambda _: mostrar_listaCliente()
+        on_click=lambda _: get_cliente()
     )
 
     txt_nome_cliente = ft.Text(size=16)
@@ -797,7 +1084,12 @@ def main(page: ft.Page):
     txt_placaVeiculo = ft.Text(size=16)
     txt_ano_fabriacacao = ft.Text(size=16)
 
-
+    txt_cliente_associado = ft.Text(size=16)
+    txt_veiculo_associado = ft.Text(size=16)
+    txt_data_abertura = ft.Text(size=16)
+    txt_descricao = ft.Text(size=16)
+    txt_status = ft.Text(size=16)
+    txt_valor_estimado = ft.Text(size=16)
 
     page.on_route_change = gerencia_rotas
     page.on_view_pop = voltar
