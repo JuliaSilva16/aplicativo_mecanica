@@ -48,7 +48,7 @@ def main(page: ft.Page):
         if response.status_code == 200:
             dados_clientes = response.json()
             print(dados_clientes)
-            return dados_clientes
+            return dados_clientes ["cliente"]
 
         else:
             return response.json()
@@ -62,7 +62,7 @@ def main(page: ft.Page):
     #     else:
     #         dadosCliente = get_cliente(input_cpf.value)
 
-    def cliente(e):
+    def lista_cliente(e):
         lv.controls.clear()
         resultado_cliente = get_cliente()
 
@@ -315,7 +315,7 @@ def main(page: ft.Page):
 
     # get_listar ordem
     def get_ordens():
-        url = f"http://10.135.235.38:5000/ordem"
+        url = f"http://10.135.235.38:5000/ordem_servico+"
         response = requests.get(url)
 
         if response.status_code == 200:
@@ -326,7 +326,7 @@ def main(page: ft.Page):
         else:
             return response.json()
 
-    def ordem(e):
+    def lista_ordens(e):
         lv.controls.clear()
         resultado_ordem = get_ordens()
         print(resultado_ordem)
@@ -398,7 +398,6 @@ def main(page: ft.Page):
             input_veiculo_associado.value = ''
             input_data_abertura.value = ''
             input_descricao.value = ''
-            input_status.value = ''
             input_valor_estimado.value = ''
             page.overlay.append(msg_sucesso)
             msg_sucesso.open = True
@@ -468,7 +467,6 @@ def main(page: ft.Page):
                     ft.Radio(value="blue", label="Blue"),
                 ]
             ),
-            on_change=radiogroup_changed,
         )
 
         return ft.Column([ft.Text("Select your favorite color:"), cg, t])
@@ -802,7 +800,7 @@ def main(page: ft.Page):
         page.update()
 
         if page.route == "/listar_clientes":
-            cliente(e)
+            lista_cliente(e)
             page.views.append(
                 View(
                     "/listar_clientes",
@@ -854,7 +852,7 @@ def main(page: ft.Page):
             page.update()
 
         if page.route == "/listar_ordens":
-            ordem(e)
+            lista_ordens(e)
             page.views.append(
                 View(
                     "/listar_ordens",
@@ -880,10 +878,10 @@ def main(page: ft.Page):
 
         if page.route == "/listar_status":
             status(e)
-            if page.route == "/listar_clientes":
+            if page.route == "/listar_status":
                 page.views.append(
                     View(
-                        "/listar_clientes",
+                        "/listar_status",
                         [
                             lv,
                         ]
