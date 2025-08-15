@@ -5,6 +5,7 @@ from flet.core import page
 from flet.core.alignment import center
 from flet.core.colors import Colors
 from flet.core.elevated_button import ElevatedButton
+from flet.core.text_style import TextStyle
 from sqlalchemy import select
 from flet import AppBar, Text, View
 from flet.core.colors import Colors
@@ -175,7 +176,7 @@ def main(page: ft.Page):
         if response.status_code == 200:
             dados_veiculos = response.json()
             print(dados_veiculos)
-            return dados_veiculos
+            return dados_veiculos["veiculo"]
 
         else:
                 return response.json()
@@ -299,7 +300,6 @@ def main(page: ft.Page):
             "Veiculo associado": input_veiculo_associado.value,
             "Data de abertura": input_data_abertura.value,
             "Descrição": input_descricao.value,
-            "Status": input_status.value,
             "Valor estimado": input_valor_estimado.value,
         }
         response_ordem = requests.post(url, json=new_ordem)
@@ -315,13 +315,13 @@ def main(page: ft.Page):
 
     # get_listar ordem
     def get_ordens():
-        url = f"http://10.135.235.38:5000/veiculos"
+        url = f"http://10.135.235.38:5000/ordem"
         response = requests.get(url)
 
         if response.status_code == 200:
             dados_ordem = response.json()
             print(dados_ordem)
-            return dados_ordem
+            return dados_ordem ["ordem"]
 
         else:
             return response.json()
@@ -390,7 +390,6 @@ def main(page: ft.Page):
                 veiculo_associado=input_veiculo_associado.value,
                 data_abertura=input_data_abertura.value,
                 descricao=input_descricao.value,
-                status=input_status.value,
                 valor_estimado=input_valor_estimado,
             )
 
@@ -984,6 +983,7 @@ def main(page: ft.Page):
     )
 
     input_cpf = ft.TextField(
+        fill_color=Colors.WHITE,
         bgcolor='#f1ecd1',
         color='#673c22',
         label="Digite o cpf do cliente ",
@@ -991,12 +991,14 @@ def main(page: ft.Page):
     )
 
     input_telefone = ft.TextField(
+        fill_color=Colors.WHITE,
         bgcolor='#f1ecd1',
         color='#673c22',
         label="Digite o telefone do cliente ",
         hint_text='Ex: 00123456789'
     )
     input_endereco = ft.TextField(
+        fill_color=Colors.WHITE,
         bgcolor='#f1ecd1',
         color='#673c22',
         label="Digite o endereço do cliente ",
@@ -1004,39 +1006,66 @@ def main(page: ft.Page):
     )
 
     input_cliente_associado = ft.TextField(
+        fill_color=Colors.WHITE,
+        bgcolor='#f1ecd1',
+        color='#673c22',
         label="Digite o cliente associado do cliente: ",
         hint_text='Ex:1'
     )
     input_marcaVeiculo = ft.TextField(
+        fill_color=Colors.WHITE,
+        bgcolor='#f1ecd1',
+        color='#673c22',
         label="Digite o marca do veículo ",
         hint_text='Ex:HB20S'
     )
     input_modeloVeiculo = ft.TextField(
+        fill_color=Colors.WHITE,
+        bgcolor='#f1ecd1',
+        color='#673c22',
         label="Digite o modelo do veiculo",
         hint_text='Ex:'
     )
     input_placaVeiculo = (ft.TextField(
+        fill_color=Colors.WHITE,
+        bgcolor='#f1ecd1',
+        color='#673c22',
         label="Digite a placa do veículo",
         hint_text='Ex:BR123')
     )
     input_ano_fabricacao = ft.TextField(
+        fill_color=Colors.WHITE,
+        bgcolor='#f1ecd1',
+        color='#673c22',
         label="Digite o ano de fabricação",
         hint_text='Ex:2010'
     )
     input_veiculo_associado = ft.TextField(
+        fill_color=Colors.WHITE,
+        bgcolor='#f1ecd1',
+        color='#673c22',
         label="Digite o veiculo associado do cliente ",
         hint_text='Ex:2'
     )
     input_data_abertura = ft.TextField(
+        fill_color=Colors.WHITE,
+        bgcolor='#f1ecd1',
+        color='#673c22',
         label="Digite o data abertura do carro na mecânica ",
         hint_text='Ex: 10/02/2025'
     )
     input_descricao = ft.TextField(
+        fill_color=Colors.WHITE,
+        bgcolor='#f1ecd1',
+        color='#673c22',
         label="Digite a descrição do serviço",
         hint_text='Ex:Motor'
     )
 
     input_valor_estimado = ft.TextField(
+        fill_color=Colors.WHITE,
+        bgcolor='#f1ecd1',
+        color='#673c22',
         label="Digite o valor estimado do veiculo ",
         hint_text='Ex:198.65'
     )
@@ -1044,11 +1073,12 @@ def main(page: ft.Page):
     cg = ft.RadioGroup(
         content=ft.Column(
             [
-                ft.Radio(value="pendente", label="Pendente"),
-                ft.Radio(value="andamento", label="Em andamento"),
-                ft.Radio(value="concluido", label="concluído"),
+                ft.Radio(value="pendente", label="Pendente", fill_color = "#991C22",label_style=TextStyle(color=ft.Colors.BLACK)),
+                ft.Radio(value="andamento", label="Em andamento",fill_color = "#991C22",label_style=TextStyle(color=ft.Colors.BLACK)),
+                ft.Radio(value="concluido", label="concluído",fill_color="#991C22", label_style=TextStyle(color=ft.Colors.BLACK)),
             ]
         ),
+
     )
 
     progress = ft.ProgressRing(visible=False)
