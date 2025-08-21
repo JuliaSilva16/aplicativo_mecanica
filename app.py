@@ -63,9 +63,11 @@ def main(page: ft.Page):
     #         dadosCliente = get_cliente(input_cpf.value)
 
     def lista_cliente(e):
+        print("Esperar")
         lv.controls.clear()
         resultado_cliente = get_cliente()
 
+        print("Chegou")
         print(resultado_cliente)
 
         for cliente in resultado_cliente:
@@ -181,7 +183,7 @@ def main(page: ft.Page):
         else:
                 return response.json()
 
-    def veiculo(e):
+    def lista_veiculo(e):
         lv.controls.clear()
         resultado_veiculo = get_veiculos()
         print(resultado_veiculo)
@@ -370,7 +372,7 @@ def main(page: ft.Page):
             print(f"Erro: {response.status_code}")
 
     def salvar_cadastro_ordens(e):
-        if input_cliente_associado.value == '' or input_veiculo_associado.value == '' or input_data_abertura.value == '' or input_descricao.value == '' or input_status.value == '' or input_valor_estimado.value == '':
+        if input_cliente_associado.value == '' or input_veiculo_associado.value == '' or input_data_abertura.value == '' or input_descricao.value == '' or input_valor_estimado.value == '':
             page.overlay.append(msg_error)
             msg_error.open = True
             page.update()
@@ -653,8 +655,9 @@ def main(page: ft.Page):
 
                         ft.Container(
                             ft.Image(src='quarta_tela_cadastro.png', width=250)
-
                         ),
+                         #Text(value=f"Obrigatório preencher todos os campos", color=Colors.BLACK),
+
                         input_cliente_associado,
                         input_marcaVeiculo,
                         input_modeloVeiculo,
@@ -669,13 +672,13 @@ def main(page: ft.Page):
                                     col=6,
                                     color = '#991C22',
                                     bgcolor = '#F00138',
-                                ),
 
+                                ),
 
                                 # Botão da direita
                                 ft.FilledButton(
-                                    text="Lista de veiculos",
-                                    on_click=lambda _: page.go("/listrar_veiculos"),
+                                    text="Lista veículos",
+                                    on_click=lambda _: page.go("/listar_veiculos"),
                                     color='#f1ecd1',
                                     bgcolor='#991C22',
                                     col=6
@@ -727,7 +730,7 @@ def main(page: ft.Page):
                                 # Botão da direita
                                 ft.FilledButton(
                                     text="Lista cliente",
-                                    on_click=lambda _: page.go("/listrar_ordens"),
+                                    on_click=lambda _: page.go("/listar_ordens"),
                                     color='#f1ecd1',
                                     bgcolor='#F65346',
                                     col=6
@@ -754,7 +757,6 @@ def main(page: ft.Page):
 
                         ft.ResponsiveRow(
                             [
-
                                 ft.FilledButton(
                                     text="Listar cliente",
                                     on_click=lambda _: page.go("/listar_clientes"),
@@ -797,7 +799,6 @@ def main(page: ft.Page):
                     horizontal_alignment=CrossAxisAlignment.CENTER,
                 )
             )
-        page.update()
 
         if page.route == "/listar_clientes":
             lista_cliente(e)
@@ -808,7 +809,7 @@ def main(page: ft.Page):
                         ft.Row([
                             ft.FilledButton(
                                 text="←--",
-                                on_click=lambda _: page.go("/cadastros"),
+                                on_click=lambda _: page.go("/listas"),
                                 color='#f1ecd1',
                                 bgcolor='#991C22',
                                 col=6,
@@ -820,12 +821,13 @@ def main(page: ft.Page):
                         lv,
                         ElevatedButton(text="Editar", on_click=lambda _: editar_cliente(e)),
                     ],
+                    bgcolor='#f1ecd1',
+                    horizontal_alignment=CrossAxisAlignment.CENTER,
                 )
             )
-        page.update()
 
         if page.route == "/listar_veiculos":
-            veiculo(e)
+            lista_veiculo(e)
             if page.route == "/listar_veiculos":
                 page.views.append(
                     View(
@@ -834,7 +836,7 @@ def main(page: ft.Page):
                             ft.Row([
                                 ft.FilledButton(
                                     text="←--",
-                                    on_click=lambda _: page.go("/cadastros"),
+                                    on_click=lambda _: page.go("/listas"),
                                     color='#f1ecd1',
                                     bgcolor='#991C22',
                                     col=6,
@@ -845,8 +847,9 @@ def main(page: ft.Page):
                             ),
                             lv,
                             ElevatedButton(text="Editar", on_click=lambda _: editar_veiculo(e)),
-                        ]
-
+                        ],
+                        bgcolor='#f1ecd1',
+                        horizontal_alignment=CrossAxisAlignment.CENTER,
                     )
                 )
             page.update()
@@ -860,7 +863,7 @@ def main(page: ft.Page):
                         ft.Row([
                             ft.FilledButton(
                                 text="←--",
-                                on_click=lambda _: page.go("/cadastros"),
+                                on_click=lambda _: page.go("/listas"),
                                 color='#f1ecd1',
                                 bgcolor='#991C22',
                                 col=6,
@@ -872,6 +875,8 @@ def main(page: ft.Page):
                         lv,
                         ElevatedButton(text="Editar", on_click=lambda _: editar_ordem_servico(e)),
                     ],
+                    bgcolor='#f1ecd1',
+                    horizontal_alignment=CrossAxisAlignment.CENTER,
                 )
             )
             page.update()
@@ -884,12 +889,13 @@ def main(page: ft.Page):
                         "/listar_status",
                         [
                             lv,
-                        ]
+                        ],
+                        bgcolor='#f1ecd1',
+                        horizontal_alignment=CrossAxisAlignment.CENTER,
 
                     )
                 )
             page.update()
-        page.update()
 
         if page.route == "/detalhe_cliente":
             page.views.append(
@@ -909,11 +915,11 @@ def main(page: ft.Page):
                         txt_cpf,
                         txt_telefone,
                         txt_endereco,
-
                     ],
+                    bgcolor='#f1ecd1',
+                    horizontal_alignment=CrossAxisAlignment.CENTER,
                 )
             )
-        page.update()
 
         if page.route == "/detalhe_veiculo":
             page.views.append(
@@ -932,9 +938,10 @@ def main(page: ft.Page):
                         lv,
 
                     ],
+                    bgcolor='#f1ecd1',
+                    horizontal_alignment=CrossAxisAlignment.CENTER,
                 )
             )
-        page.update()
 
         if page.route == "/detalhe_ordens":
             page.views.append(
@@ -958,11 +965,12 @@ def main(page: ft.Page):
                         txt_valor_estimado,
 
                     ],
+                    bgcolor='#f1ecd1',
+                    horizontal_alignment=CrossAxisAlignment.CENTER,
                 )
             )
+
         page.update()
-
-
 
     def voltar(e):
         print("Views", page.views)
