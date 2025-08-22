@@ -245,10 +245,11 @@ def main(page: ft.Page):
             msg_error.open = True
             page.update()
         else:
-            placaVeiculo = input_placaVeiculo.value
+            ano_fabricacao = input_ano_fabricacao.value
 
-            if not placaVeiculo.isnumeric():
-                input_placaVeiculo.error = True
+            if not ano_fabricacao.isnumeric():
+                input_ano_fabricacao.error = True
+                input_ano_fabricacao.error_text = "Apenas números"
                 page.update()
                 return
 
@@ -257,7 +258,7 @@ def main(page: ft.Page):
                 marca_veiculo=input_marcaVeiculo.value,
                 modelo_veiculo=input_modeloVeiculo.value,
                 placa_veiculo=input_placaVeiculo.value,
-                ano_fabricacao=input_ano_fabricacao.value,
+                ano_fabricacao=int(input_ano_fabricacao.value),
             )
 
             informacoes_veiculos.save()

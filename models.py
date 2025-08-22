@@ -44,7 +44,7 @@ class Veiculo(Base):
     marca_veiculo = Column(String(20), nullable=False,index=True)
     modelo_veiculo = Column(String(30), nullable=False,index=True)
     placa_veiculo = Column(String(7), nullable=False,index=True,unique=True)
-    ano_fabricacao = Column(String(8), nullable=False,index=True)
+    ano_fabricacao = Column(Integer, nullable=False,index=True)
 
     def __repr__(self):
         return '<Veiculo: {} {} {} {} {} {} '.format(self.id_veiculo,self.cliente,self.marca_veiculo,self.modelo_veiculo,self.placa_veiculo,self.ano_fabricacao)
