@@ -259,6 +259,7 @@ def main(page: ft.Page):
                 placa_veiculo=input_placaVeiculo.value,
                 ano_fabricacao=input_ano_fabricacao.value,
             )
+
             informacoes_veiculos.save()
             input_cliente_associado.value = ''
             input_marcaVeiculo.value = ''
@@ -601,7 +602,7 @@ def main(page: ft.Page):
                         ]),
 
                         ft.Container(
-                            ft.Image(src='quarta_tela_cadastro.png', width=250)
+                            ft.Image(src='quarta_tela_cadastro.png', width=250),
                         ),
                          #Text(value=f"Obrigatório preencher todos os campos", color=Colors.BLACK),
 
