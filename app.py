@@ -671,8 +671,8 @@ def main(page: ft.Page):
                                     text="Salvar",
                                     on_click=lambda _: salvar_cadastro_veiculos(e),
                                     col=6,
-                                    color = '#991C22',
-                                    bgcolor = '#F00138',
+                                    color='#991C22',
+                                    bgcolor='#F00138',
 
                                 ),
 
