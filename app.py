@@ -317,7 +317,7 @@ def main(page: ft.Page):
 
     # get_listar ordem
     def get_ordens():
-        url = f"http://10.135.235.38:5000/ordem_servico+"
+        url = f"http://10.135.235.38:5000/ordem_servico"
         response = requests.get(url)
 
         if response.status_code == 200:
